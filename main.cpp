@@ -138,8 +138,8 @@ void fillMap(std::map<T,U,X,Y>&m){
 
 template <typename T,typename U,typename X,typename Y>
 void printMap(const std::map<T,U,X,Y> & m){
-    for (const auto [key,value]:m){
-        std::cout<<key<<" "<<value<<std::endl;
+    for (const auto & i:m){
+        std::cout<<i.fitst<<" "<<i.second<<std::endl;
     }
 }
 
