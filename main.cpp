@@ -139,7 +139,7 @@ void fillMap(std::map<T,U,X,Y>&m){
 template <typename T,typename U,typename X,typename Y>
 void printMap(const std::map<T,U,X,Y> & m){
     for (const auto & i:m){
-        std::cout<<i.first<<" "<<i.secondtrat<<std::endl;
+        std::cout<<i.first<<" "<<i.second<<std::endl;
     }
 }
 
