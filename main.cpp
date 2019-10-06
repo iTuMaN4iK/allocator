@@ -1,11 +1,10 @@
+#include "lib.h"
+#include "factor.h"
 #include <iostream>
 #include <map>
 #include <vector>
-#include "factor.h"
-#include "lib.h"
 
-#define UNUSED(variable) (void)variable
-
+// #define USE_PRETTY
 
 template <typename T>
 struct my_allocator{
@@ -16,13 +15,13 @@ struct my_allocator{
     using reference =T&;
     using const_reference =T&;
     T * memory;
+    size_t size;
     template<typename U>
     struct rebind {
         using other = my_allocator<U>;
     };
     
-    my_allocator(){
-        memory=reinterpret_cast<T *>(std::malloc(10*sizeof(T)));
+    my_allocator():memory{},size(0){
     };
     ~my_allocator()=default;
 
@@ -35,15 +34,27 @@ struct my_allocator{
 #ifdef USE_PRETTY
         std::cout << "allocate: [n = " << n << "]" << std::endl;
 #endif 
-        UNUSED(n);
-        return memory++;
+        if (n>10){
+            throw std::bad_alloc();
+        }
+        if (!memory)
+            memory=reinterpret_cast<T *>(std::malloc(10*sizeof(T)));
+
+        
+        if (size+n<10){
+            T * ptr = memory+size;
+            size+=n;
+            return ptr;
+        }else{
+            memory=reinterpret_cast<T *>(std::malloc(10*sizeof(T)));
+            size=n;
+            return memory;
+        }
     }
-    void deallocate(T *p,std::size_t n){
+    void deallocate(T *,std::size_t ){
 #ifdef USE_PRETTY
-        std::cout << "deallocate: [n  = " << n << "] " << std::endl;
+        std::cout << "deallocate: " << std::endl;
 #endif
-        UNUSED(p);
-        UNUSED(n);
     }
     template<typename U, typename ...Args>
     void construct(U *p, Args &&...args){
@@ -52,11 +63,12 @@ struct my_allocator{
 #endif
         new(p) U(std::forward<Args>(args)...);
     }
-    void destroy(T *p){
+    template<typename U>
+    void destroy(U *p){
 #ifdef USE_PRETTY
         std::cout << "destroy" << std::endl;
 #endif
-        p->~T();
+        p->~U();
     }
 };
 
